@@ -35,7 +35,9 @@ PLANETARIUM_FQBN="arduino:avr:mega"
 WATERFALL_FQBN="arduino:avr:mega"
 TRACER_FQBN="arduino:avr:uno"
 
-REMOTE_DIR="pi@192.168.68.200:/xfer"
+REMOTE_DIR="pi@piTrackCentralControl:"
+SRC_DIR="dev"
+SRC_HOME_DIR="${HOME}/dev"
 
 
 
@@ -54,7 +56,6 @@ MSG_INFO=2
 #----------------------------------------------
 RVAL=0
 TARGET_DIR="/xfer"
-HOST_DIR="~/dev"
 
 
 ################################################################################
@@ -82,7 +83,7 @@ check_for_root()
 # Parameters:
 #   $1: Program directory
 #   $2: Device
-#   $2: FQBN
+#   $3: FQBN
 # Comments:
 #    Compile and load the given program
 #-------------------------------------------------------------------
@@ -95,7 +96,7 @@ compile_and_load()
     #===============================
     # Change directories
     #===============================
-    cmd="cd $HOME"
+    cmd="cd ${SRC_DIR}/${PROGRAM_DIR}"
     do_cmd "$cmd"
     if [ $RVAL -ne 0 ]; then
             echo "Change directory failed"
@@ -107,7 +108,7 @@ compile_and_load()
     # Compile
     #===============================
     echo "Compiling..."
-    cmd="arduino-cli compile --clean -b ${FQBN} dev/${PROGRAM_DIR}/${PROGRAM_DIR}.ino"
+    cmd="arduino-cli compile  --fqbn ${FQBN} ${SRC_DIR}/${PROGRAM_DIR}/${PROGRAM_DIR}.ino"
     do_cmd "$cmd"
     if [ $RVAL -ne 0 ]; then
             echo "Compile failed"
@@ -118,7 +119,7 @@ compile_and_load()
     # Upload
     #===============================
     echo "Uploading..."
-    cmd="arduino-cli upload -p ${DEVICE} -b ${FQBN} dev/${PROGRAM_DIR}/${PROGRAM_DIR}.ino"
+    cmd="arduino-cli upload -p ${DEVICE} --fqbn ${FQBN} ${SRC_DIR}/${PROGRAM_DIR}/${PROGRAM_DIR}.ino"
     do_cmd "$cmd"
     if [ $RVAL -ne 0 ]; then
             echo "Loading failed"
@@ -140,7 +141,7 @@ direct_copy()
 {
     PROGRAM=$1
 
-    cmd="scp ${PROGRAM}.ino ${REMOTE_DIR}/${PROGRAM}/."
+    cmd="scp ${PROGRAM}.ino ${REMOTE_DIR}/${SRC_DIR}/${PROGRAM}/."
     do_cmd "$cmd"
     if [ $RVAL -ne 0 ]; then
             echo "Direct copy failed"
@@ -162,7 +163,7 @@ remote_copy()
 {
     PROGRAM_DIR=$1
 
-    cmd="scp ${PROGRAM_DIR}/${PROGRAM_DIR}.ino ${REMOTE_DIR}/."
+    cmd="scp ${SRC_DIR}/${PROGRAM_DIR}/${PROGRAM_DIR}.ino ${REMOTE_DIR}/${SRC_DIR}/${PROGRAM_DIR}/."
     do_cmd "$cmd"
     if [ $RVAL -ne 0 ]; then
             echo "Copying failed"
@@ -426,28 +427,29 @@ main() {
     parse "${@}"
     # check_for_root
 
+
     #-------------------------------------------------------------------
     # Hogwarts
     #-------------------------------------------------------------------
     if [[ $IS_ACTION__COPY -eq 1 ]]; then
         is_verbose "ACTION: copy..."
         if [[ $OPERATIVE__HOGWARTS -eq 1 ]]; then
-            cmd="scp ${HOGWARTS_DIR}/${HOGWARTS_DIR}.ino ${REMOTE_DIR}/${HOGWARTS_DIR}/."
+            cmd="scp ${SRC_HOME_DIR}/${HOGWARTS_DIR}/${HOGWARTS_DIR}.ino ${REMOTE_DIR}${SRC_DIR}/${HOGWARTS_DIR}/."
             do_cmd "$cmd"
         fi
         if [[ $OPERATIVE__PLANETARIUM -eq 1 ]]; then
-            cmd="scp ${PLANETARIUM_DIR}/${PLANETARIUM_DIR}.ino ${REMOTE_DIR}/${PLANETARIUM_DIR}/."
+            cmd="scp ${SRC_HOME_DIR}/${PLANETARIUM_DIR}/${PLANETARIUM_DIR}.ino ${REMOTE_DIR}${SRC_DIR}/${PLANETARIUM_DIR}/."
             do_cmd "$cmd"
         fi
         if [[ $OPERATIVE__TRACER -eq 1 ]]; then
-            cmd="scp ${TRACER_DIR}/${TRACER_DIR}.ino ${REMOTE_DIR}/${TRACER_DIR}/${TRACER_DIR}/."
+            cmd="scp ${SRC_HOME_DIR}/${TRACER_DIR}/${TRACER_DIR}.ino ${REMOTE_DIR}${SRC_DIR}/${TRACER_DIR}/."
             do_cmd "$cmd"
         fi
         if [[ $OPERATIVE__UTILITY -eq 1 ]]; then
             direct_copy "${PROGRAM_NAME}"
         fi
         if [[ $OPERATIVE__WATERFALL -eq 1 ]]; then
-            cmd="scp ${WATERFALL_DIR}/${WATERFALL_DIR}.ino ${REMOTE_DIR}/${WATERFALL_DIR}/."
+            cmd="scp ${SRC_HOME_DIR}/${WATERFALL_DIR}/${WATERFALL_DIR}.ino ${REMOTE_DIR}${SRC_DIR}/${WATERFALL_DIR}/."
             do_cmd "$cmd"
         fi
     fi
@@ -471,7 +473,7 @@ main() {
 
     #-------------------------------------------------------------------
     # Done!
-    #-------------------------------------------------------------------
+    #------------------------------------------------------------------
     echo "Complete!"
 }
 

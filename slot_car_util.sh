@@ -36,8 +36,8 @@ WATERFALL_FQBN="arduino:avr:mega"
 TRACER_FQBN="arduino:avr:uno"
 
 REMOTE_DIR="pi@piTrackCentralControl:"
-SRC_DIR="dev"
-SRC_HOME_DIR="${HOME}/dev"
+SRC_DIR="~/dev"
+SRC_HOME_DIR="~/dev"
 
 
 

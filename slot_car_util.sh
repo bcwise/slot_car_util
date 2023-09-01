@@ -27,8 +27,8 @@ WATERFALL_DIR="slot_car--waterfall_light_control"
 #   /dev/ttyACM3: Tracer Lights
 PLANETARIUM_DEVICE="/dev/ttyACM0"
 HOGWARTS_DEVICE="/dev/ttyACM1"
-WATERFALL_DEVICE="/dev/ttyACM2"
-TRACER_DEVICE="/dev/ttyACM3"
+WATERFALL_DEVICE="/dev/ttyACM3"
+TRACER_DEVICE="/dev/ttyACM2"
 
 HOGWARTS_FQBN="arduino:avr:mega"
 PLANETARIUM_FQBN="arduino:avr:mega"

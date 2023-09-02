@@ -11,12 +11,14 @@ IS_ACTION__COPY=0
 
 OPERATIVE__HOGWARTS=0
 OPERATIVE__PLANETARIUM=0
+OPERATIVE__RGBCALIBRATE=0
 OPERATIVE__TRACER=0
 OPERATIVE__WATERFALL=0
 OPERATIVE__UTILITY=0
 
 HOGWARTS_DIR="slot_car--hogwarts_light_control"
 PLANETARIUM_DIR="slot_car--planetarium_light_control"
+RGBCALIBRATE_DIR="arduino--RGBCalibrate"
 TRACER_DIR="slot_car--tracer_lights"
 WATERFALL_DIR="slot_car--waterfall_light_control"
 
@@ -29,11 +31,13 @@ PLANETARIUM_DEVICE="/dev/ttyACM0"
 HOGWARTS_DEVICE="/dev/ttyACM1"
 WATERFALL_DEVICE="/dev/ttyACM3"
 TRACER_DEVICE="/dev/ttyACM2"
+RGBCALIBRATE_DEVICE=WATERFALL_DEVICE
 
 HOGWARTS_FQBN="arduino:avr:mega"
 PLANETARIUM_FQBN="arduino:avr:mega"
 WATERFALL_FQBN="arduino:avr:mega"
 TRACER_FQBN="arduino:avr:uno"
+RGBCALIBRATE_FQBN=WATERFALL_FQBN
 
 REMOTE_DIR="pi@piTrackCentralControl:"
 SRC_DIR="~/dev"
@@ -291,6 +295,9 @@ help() {
     echo "   -p, --planetarium"
     echo "      Copy the planetarium program to the remote slot_car target directory"
     echo
+    echo "   -r, --rgbcalibrate"
+    echo "      Copy the RGB Calibrate remote slot_car target directory"
+    echo
     echo "   -t, --tracer"
     echo "      Copy the tracer program to the remote slot_car target directory"
     echo
@@ -316,8 +323,8 @@ help() {
 parse()
 {
 
-SHORT=c,h,l,p,t,w,u,p,v
-LONG=copy,load,hogwarts,planetarium,tracer,waterfall,utility,help,pseudo,verbose
+SHORT=c,h,l,p,r,t,w,u,p,v
+LONG=copy,load,hogwarts,planetarium,rgbcalibrate,tracer,waterfall,utility,help,pseudo,verbose
 OPTS=$(getopt --options $SHORT --longoptions $LONG -- "${@}")
 
 eval set -- "$OPTS"
@@ -348,6 +355,10 @@ while :; do
         ;;
     -p | --planetarium)
         OPERATIVE__PLANETARIUM=1
+        shift
+        ;;
+    -r | --rgbcalibrate)
+        OPERATIVE__RGBCALIBRATE=1
         shift
         ;;
     -t | --tracer)
@@ -405,6 +416,7 @@ is_verbose " OPERATIVES"
 is_verbose "-------------------------------------------------------------"
 is_verbose " OPERATIVE__HOGWARTS:            $OPERATIVE__HOGWARTS"
 is_verbose " OPERATIVE__PLANETARIUM:         $OPERATIVE__PLANETARIUM"
+is_verbose " OPERATIVE__RGBCALIBRATE:        $OPERATIVE__RGBCALIBRATE"
 is_verbose " OPERATIVE__TRACER:              $OPERATIVE__TRACER"
 is_verbose " OPERATIVE__UTILITY:             $OPERATIVE__UTILITY"
 is_verbose " OPERATIVE__WATERFALL:           $OPERATIVE__WATERFALL"
@@ -441,6 +453,10 @@ main() {
             cmd="scp ${SRC_HOME_DIR}/${PLANETARIUM_DIR}/${PLANETARIUM_DIR}.ino ${REMOTE_DIR}${SRC_DIR}/${PLANETARIUM_DIR}/."
             do_cmd "$cmd"
         fi
+        if [[ $OPERATIVE__RGBCALIBRATE -eq 1 ]]; then
+            cmd="scp ${SRC_HOME_DIR}/${RGBCALIBRATE_DIR}/${RGBCALIBRATE_DIR}.ino ${REMOTE_DIR}${SRC_DIR}/${RGBCALIBRATE_DIR}/."
+            do_cmd "$cmd"
+        fi
         if [[ $OPERATIVE__TRACER -eq 1 ]]; then
             cmd="scp ${SRC_HOME_DIR}/${TRACER_DIR}/${TRACER_DIR}.ino ${REMOTE_DIR}${SRC_DIR}/${TRACER_DIR}/."
             do_cmd "$cmd"
@@ -462,6 +478,9 @@ main() {
         fi
         if [[ $OPERATIVE__PLANETARIUM -eq 1 ]]; then
             compile_and_load ${PLANETARIUM_DIR} ${PLANETARIUM_DEVICE} ${PLANETARIUM_FQBN}
+        fi
+        if [[ $OPERATIVE__RGBCALIBRATE -eq 1 ]]; then
+            compile_and_load ${RGBCALIBRATE_DIR} ${RGBCALIBRATE_DEVICE} ${RGBCALIBRATE_FQBN}
         fi
         if [[ $OPERATIVE__TRACER -eq 1 ]]; then
             compile_and_load ${TRACER_DIR} ${TRACER_DEVICE} ${TRACER_FQBN}

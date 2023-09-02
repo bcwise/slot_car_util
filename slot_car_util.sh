@@ -37,7 +37,7 @@ HOGWARTS_FQBN="arduino:avr:mega"
 PLANETARIUM_FQBN="arduino:avr:mega"
 WATERFALL_FQBN="arduino:avr:mega"
 TRACER_FQBN="arduino:avr:uno"
-RGBCALIBRATE_FQBN=WATERFALL_FQBN
+RGBCALIBRATE_FQBN="arduino:avr:mega"
 
 REMOTE_DIR="pi@piTrackCentralControl:"
 SRC_DIR="~/dev"
